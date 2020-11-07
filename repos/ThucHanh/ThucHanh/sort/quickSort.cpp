@@ -10,7 +10,7 @@ private:
 public:
     static void printArray(T *start, T *end)
     {
-        int size = end - start;
+        int size = end - start+1;
         for (int i = 0; i < size - 1; i++)
             cout << start[i] << ", ";
         cout << start[size - 1];
@@ -25,33 +25,41 @@ public:
 template <class T>
 T *Sorting<T>::Partition(T *start, T *end)
 {
-    // pivot (Element to be placed at right position)
-    T* left = start;
-    T* right = end;
-    T pivot = start[0];
-    int n = end - start;
-    T temp;
-    while (left != right)
-    {
-        if (*left > *right)
-        {
-            temp = *left;
-            *left = *right;
-            *right = temp;
-        }
-        if (pivot == *right)
-            right--;
-        else // Pivot == arr[right]
-            left++;
-    }
+    
     cout << "Quick sort: ";
     printArray(start, end);
-    return right;
+    // pivot (Element to be placed at right position)
+    int i= 1;
+    int j = end - start ;
+    T pivot = *start;
+    T temp;
+
+    while (i <= j)
+    {
+        while (start[i] <= pivot)
+            i++;
+        while (start[j] > pivot)
+            j--;
+        if (i <= j)
+        {
+            temp = start[i];
+            start[i] = start[j];
+            start[j] = temp;
+            i++;
+            j--;
+        }
+    }
+    start[0] = start[j];
+    start[j] = pivot;
+    return &start[j];
 }
 
 template <class T>
 void Sorting<T>::insertionSort(T *start, T *end)
 {
+    
+        cout << "Insertion sort: ";
+        printArray(start, end);
     int n = end - start;
     int idx;
     T temp;
@@ -65,38 +73,35 @@ void Sorting<T>::insertionSort(T *start, T *end)
             idx--;
         }
         start[idx] = temp;
-        cout << "Insertion sort: ";
-        printArray(start, end);
     }
 }
 
 template <class T>
 void Sorting<T>::hybridQuickSort(T *start, T *end, int min_size)
 {
-    if(end - start > 1){
-    if (end - start < min_size)
-    {
-        insertionSort(start, end);
-    }
-    else
-    {
+    if (end - start +1 > 1){
         if (start < end)
         {
             /* pi is partitioning index, arr[pi] is now
            at right place */
             T *pi = Partition(start, end);
-
             hybridQuickSort(start, pi - 1, min_size);  // Before pi
             hybridQuickSort(pi + 1, end, min_size); // After pi
         }
-    }
 }
 }
+
+
 int main()
 {
 
-    int array[] = {2, 6, 4, 12, 23, 1, 0, -12};
+int array[] = {1, 2, 6, 4, 7, 8, 5, 3};
 int min_size = 4;
-Sorting<int>::hybridQuickSort(&array[0], &array[8], min_size);
+// Sorting<int>::printArray(&array[0], &array[7]);
+
+Sorting<int>::hybridQuickSort(&array[0], &array[7], min_size);
+cout << " \n============================\n";
+Sorting<int>::printArray(&array[0], &array[7]);
+
     return 0;
 }
