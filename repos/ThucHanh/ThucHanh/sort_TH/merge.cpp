@@ -82,8 +82,8 @@ public:
 
 int main()
 {
-    int arr[] = {10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0};
-    Sorting<int>::mergeSort(&arr[0], &arr[10]);
+    int arr[] = {19, 20, 18, 17 ,12, 13, 14, 15, 1, 2, 9, 6, 4, 7, 11, 16, 10, 8, 5, 3};
+    Sorting<int>::mergeSort(&arr[0], &arr[20]);
     cout << endl
          << "=================";
     Sorting<int>::printArray(&arr[0], &arr[10]);

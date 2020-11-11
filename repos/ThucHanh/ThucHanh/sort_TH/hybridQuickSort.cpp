@@ -61,12 +61,7 @@ template <class T>
 void Sorting<T>::insertionSort(T *start, T *end)
 {
     //print 
-    cout << "Insertion sort: ";
-    int size = end - start+1;
-    for (int i = 0; i < size - 1; i++)
-    cout << start[i] << ", ";
-    cout << start[size - 1];
-    //print
+    
     int n = end - start;
     int idx;
     T temp;
@@ -81,6 +76,12 @@ void Sorting<T>::insertionSort(T *start, T *end)
         }
         start[idx] = temp;
     }
+    cout << "Insertion sort: ";
+    int size = end - start+1;
+    for (int i = 0; i < size - 1; i++)
+    cout << start[i] << ", ";
+    cout << start[size - 1];
+    //print
 }
 
 template <class T>
@@ -119,9 +120,9 @@ void Sorting<T>::hybridQuickSort(T *start, T *end, int min_size)
 int main()
 {
 
-int array[] = {2, -1};
+int array[] = {19, 20, 17, 18};
 int min_size = 4;
-Sorting<int>::hybridQuickSort(&array[0], &array[2], min_size);
+Sorting<int>::insertionSort(&array[0], &array[4]);
 
     return 0;
 }

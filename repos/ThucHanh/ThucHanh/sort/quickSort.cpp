@@ -95,13 +95,13 @@ void Sorting<T>::hybridQuickSort(T *start, T *end, int min_size)
 int main()
 {
 
-int array[] = {1, 2, 6, 4, 7, 8, 5, 3};
-int min_size = 4;
+int array[] = { 3, 5, 7, 10 ,12, 14, 15, 13, 1, 2, 9, 6, 4, 8, 11, 16, 17, 18, 20, 19 };
+int min_size = 0;
 // Sorting<int>::printArray(&array[0], &array[7]);
 
-Sorting<int>::hybridQuickSort(&array[0], &array[7], min_size);
+Sorting<int>::hybridQuickSort(&array[0], &array[10], min_size);
 cout << " \n============================\n";
-Sorting<int>::printArray(&array[0], &array[7]);
+Sorting<int>::printArray(&array[0], &array[19]);
 
     return 0;
 }
