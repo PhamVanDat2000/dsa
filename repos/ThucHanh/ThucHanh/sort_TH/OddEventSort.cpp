@@ -27,8 +27,6 @@ void Sorting<T>::oddEvenSort(T *start, T *end)
     {
         isSorted = true;
 
-        
-
         // Perform Bubble sort on even indexed element
         for (int i = 0; i <= n - 1; i = i + 2)
         {
@@ -59,8 +57,8 @@ void Sorting<T>::oddEvenSort(T *start, T *end)
 
 int main()
 {
-    int arr[] = {3, 2, 3, 8, 5, 6, 4, 1};
-    Sorting<int>::oddEvenSort(&arr[0], &arr[8]);
 
-        return (0);
+    int arr[] = {9, 30, 1, -7, 7, -9, 5, 6, -1, -2};
+    Sorting<int>::oddEvenSort(&arr[0], &arr[10]);
+    return (0);
 }

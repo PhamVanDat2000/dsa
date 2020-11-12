@@ -5,7 +5,8 @@
 #include <type_traits>
 using namespace std;
 template <class T>
-class Sorting {
+class Sorting
+{
 private:
     static void printArray(T* start, T* end)
     {
@@ -16,86 +17,105 @@ private:
         cout << endl;
     }
 
-    static void merge(T* start, T* middle, T* end) {
-        int len1 = middle - start + 1, len2 = end - middle; 
-        int left[len1], right[len2]; 
-        for (int i = 0; i < len1; i++) 
-            left[i] = start[i]; 
-        for (int i = 0; i < len2; i++) 
-            right[i] = middle[1 + i]; 
-    
-        int i = 0; 
-        int j = 0; 
-        T* k = start; 
-    
-        // After comparing, we  
-        // merge those two array 
-        // in larger sub array 
-        while (i < len1 && j < len2) 
-        { 
-            if (left[i] <= right[j]) 
-            { 
-                arr[k] = left[i]; 
-                i++; 
-            } 
+    static void merge(T *start, T *middle, T *end)
+    {
+        T *pL = start;
+        int i, j;
+        int n1 = (middle - start) + 1;
+        int n2 = (end - middle);
+        T L[n1];
+        T R[n2];
+        T *p = start;
+        for (i = 0; i < n1; i++)
+        {
+            L[i] = *(p + i);
+        }
+        p = middle + 1;
+        for (j = 0; j < n2; j++)
+        {
+            R[j] = *(p + j);
+        }
+        int k = 0;
+        i = j = 0;
+        while (i < n1 && j < n2)
+        {
+            if (L[i] <= R[j])
+            {
+                *(pL + k) = L[i];
+                i++;
+            }
             else
-            { 
-                arr[k] = right[j]; 
-                j++; 
-            } 
-            k++; 
-        } 
-    
-        // Copy remaining elements of left, if any 
-        while (i < len1) 
-        { 
-            arr[k] = left[i]; 
-            k++; 
-            i++; 
-        } 
-    
-        // Copy remaining element of right, if any 
-        while (j < len2) 
-        { 
-            arr[k] = right[j]; 
-            k++; 
-            j++; 
-        } 
-    }
-public:
-    static void InsertionSort(T* start, T* end) {
-        for (int i = left + 1; i <= right; i++) 
-        { 
-            int temp = arr[i]; 
-            int j = i - 1; 
-            while (j >= left && arr[j] > temp) 
-            { 
-                arr[j+1] = arr[j]; 
-                j--; 
-            } 
-            arr[j+1] = temp; 
+            {
+                *(pL + k) = R[j];
+                j++;
+            }
+            k++;
+        }
+        while (i < n1)
+        {
+            *(pL + k) = L[i];
+            i++;
+            k++;
+        }
+        while (j < n2)
+        {
+            *(pL + k) = R[j];
+            j++;
+            k++;
         }
     }
-    static void TimSort(T* start, T* end, int min_size){
-        
-        for (int i = 0; i < n; i+=RUN) 
-        insertionSort(arr, i, min((i+31), (n-1))); 
-        for (int size = RUN; size < n; size = 2*size) 
+
+public:
+    static void InsertionSort(T *start, T *end)
+    {
+        int n = end - start;
+        int idx;
+        T temp;
+        for (int i = 1; i < n; i++)
         {
-            for (int left = 0; left < n; left += 2*size) 
-            { 
-                int mid = left + size - 1; 
-                int right = min((left + 2*size - 1), (n-1)); 
-    
-                merge(arr, left, mid, right); 
-            } 
-        } 
+            idx = i;
+            temp = start[idx];
+            while (temp < start[idx - 1] && idx > 0)
+            {
+                start[idx] = start[idx - 1];
+                idx--;
+            }
+            start[idx] = temp;
+        }
+    }
+    static void TimSort(T *start, T *end, int min_size)
+    {
+        int n = end - start;
+        // Sort individual subarrays of size RUN
+        for (int i = 0; i < n; i += min_size)
+        {
+            InsertionSort(start + i, start + min((i + 4), (n)));
+        }
+        cout << "Insertion Sort: ";
+        printArray(start, end);
+        int j = 0;
+        for (int size = min_size; size < n; size = 2 * size)
+        {
+
+            for (int left = 0; left < n; left += 2 * size)
+            {
+                j++;
+                int mid = min(left + size - 1, n - 2);
+                int right = min((left + 2 * size - 1), (n - 1));
+                
+                merge(start + left, start + mid, start + right);
+                cout << "Merge " << j << ": ";
+                printArray(start, end);
+            }
+        }
     }
 };
 #endif /* SORTING_H */
-int main(){
-    int array[] = { 19, 20, 18, 17 ,12, 13, 14, 15, 1, 2, 9, 6, 4, 7, 11, 16, 10, 8, 5, 3 };
-int min_size = 4;
-Sorting<int>::TimSort(&array[0], &array[20], min_size);
-return 0;
+
+int main()
+{
+    float array[] = {19.1, 20.1, 18.1, 17.1, 12.1, 13.1, 14.1, 15.1, 1.1, 2.1, 9.1, 6.1, 4.1, 7.1, 11.1, 16.1, 10, 8, 5, 3};
+    int min_size = 4;
+    Sorting<float>::TimSort(&array[0], &array[20], min_size);
+    return 0;
 }

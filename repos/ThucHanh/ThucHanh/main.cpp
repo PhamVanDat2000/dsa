@@ -1,67 +1,55 @@
-#include<stdio.h>
-#include<iostream>
+#include <sstream>
+#include <iostream>
+#include <type_traits>
 using namespace std;
- 
- 
-void swap(int &a, int &b)
-{
-    int t = a;
-    a = b;
-    b = t;
-}
- /* Hàm xuất mảng */
-void printArray(int arr[], int size)
-{
-    int i;
-    for (i=0; i < size; i++)
-        printf("%d ", arr[i]);
-    printf("\n");
-}
- 
-int partition (int arr[], int low, int high)
-{
-    int pivot = arr[low];    // pivot
-    int left = low+1;
-    int right = high;
-    while(true){
-        while(left <= right && arr[left] < pivot) left++;
-        while(right >= left && arr[right] > pivot) right--;
-        if (left >= right) break;
-        swap(arr[left], arr[right]);
-        left++;
-        right--;
-    }
-    swap(arr[low], arr[right]);
-    return right;
-}
- 
-/* Hàm thực hiện giải thuật quick sort */
-void quickSort(int arr[], int low, int high)
-{
-    
-    
-    printf("Sorted array: \n");
-    printArray(arr, 20);
-    if (low < high)
-    {
-        /* pi là chỉ số nơi phần tử này đã đứng đúng vị trí
-         và là phần tử chia mảng làm 2 mảng con trái & phải */
-        int pi = partition(arr, low, high);
-        // Gọi đệ quy sắp xếp 2 mảng con trái và phải
-        quickSort(arr, low, pi - 1);
-        quickSort(arr, pi + 1, high);
-    }
-}
- 
 
- 
- 
+template <class T>
+class Sorting
+{
+private:
+    static void printArray(T *start, T *end)
+    {
+        int size = end - start;
+        for (int i = 0; i < size; i++)
+            cout << start[i] << " ";
+        cout << endl;
+    }
+
+    static void sortSegment(T *start, T *end, int segment_idx, int cur_segment_total)
+    {
+        int n = end - start;
+        int interval = n / cur_segment_total;
+        int i, j;
+        T temp;
+        for (i = interval; i < n; i++)
+        {
+            temp = start[i];
+            for (j = i; j >= interval && start[j - interval] > temp; j -= interval)
+            {
+                start[j] = start[j - interval];
+            }
+            start[j] = temp;
+        }
+    }
+
+public:
+    static void ShellSort(T *start, T *end, int *num_segment_list, int num_phases)
+    {
+        for (int i = num_phases - 1; i > -1; i--)
+        {
+            int cur_segment_total = (end - start) / num_segment_list[i];
+            sortSegment(start, end, 0, cur_segment_total);
+            cout << num_segment_list[i] << " segments: ";
+            printArray(start, end);
+        }
+    }
+};
+
 int main()
 {
-    int arr[] = { 3, 5, 7, 10 ,12, 14, 15, 13, 1, 2, 9, 6, 4, 8, 11, 16, 17, 18, 20, 19};
-    int n = sizeof(arr)/sizeof(arr[0]);
-    quickSort(arr, 0, n-1);
-    printf("Sorted array: \n");
-    printArray(arr, n);
+    int num_segment_list[] = {1, 3, 5};
+    int num_phases = 3;
+    int array[] = {10, 9, 8, 7, 6, 5, 4, 3, 2, 1};
+    Sorting<int>::ShellSort(&array[0], &array[10], &num_segment_list[0], num_phases);
     return 0;
 }
