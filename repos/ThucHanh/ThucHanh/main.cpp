@@ -1,55 +1,191 @@
-#include <sstream>
 #include <iostream>
-#include <type_traits>
+#include <string>
+#include <sstream>
 using namespace std;
+// #define SEPARATOR "#<ab@17943918#@>#"
 
 template <class T>
-class Sorting
+class BinarySearchTree
 {
-private:
-    static void printArray(T *start, T *end)
-    {
-        int size = end - start;
-        for (int i = 0; i < size; i++)
-            cout << start[i] << " ";
-        cout << endl;
-    }
+public:
+    class Node;
 
-    static void sortSegment(T *start, T *end, int segment_idx, int cur_segment_total)
-    {
-        int n = end - start;
-        int interval = n / cur_segment_total;
-        int i, j;
-        T temp;
-        for (i = interval; i < n; i++)
-        {
-            temp = start[i];
-            for (j = i; j >= interval && start[j - interval] > temp; j -= interval)
-            {
-                start[j] = start[j - interval];
-            }
-            start[j] = temp;
-        }
-    }
+private:
+    Node *root;
 
 public:
-    static void ShellSort(T *start, T *end, int *num_segment_list, int num_phases)
+    BinarySearchTree() : root(nullptr) {}
+    ~BinarySearchTree()
     {
-        for (int i = num_phases - 1; i > -1; i--)
+        // You have to delete all Nodes in BinaryTree. However in this task, you can ignore it.
+    }
+
+    //Helping function
+
+    void add(T value)
+    {
+        if (root == NULL)
         {
-            int cur_segment_total = (end - start) / num_segment_list[i];
-            sortSegment(start, end, 0, cur_segment_total);
-            cout << num_segment_list[i] << " segments: ";
-            printArray(start, end);
+            Node *p = new Node(value);
+            root = p;
+        }
+        else
+        {
+            Node *pNew = new Node(value);
+
+            Node *p = new Node();
+            p = root;
+            Node *parent = new Node();
+            while (p != NULL)
+            {
+                parent = p;
+                if (value <= p->value)
+                {
+                    p = p->pLeft;
+                }
+                else
+                {
+                    p = p->pRight;
+                }
+            }
+            if (value <= parent->value)
+                parent->pLeft = pNew;
+            else
+            {
+                parent->pRight = pNew;
+            }
         }
     }
+    bool del(Node *root, T value)
+    {
+        if (root != nullptr)
+        {
+            Node *ptr = new Node();
+            ptr = root;
+            if (value < root->value)
+                return remove(root->pLeft, value);
+            else if (value > root->value)
+                return remove(root->pRight, value);
+            else
+            {
+                // if (root->pLeft == nullptr&& root->pRight == nullptr){
+                //     Node *p= root;
+                //     delete p;
+                //     p=nullptr;
+
+                // }
+                if (root->pLeft == nullptr)
+                {
+                    ptr = root;
+                    root = root->pRight;
+                    delete ptr;
+                    ptr = nullptr;
+                    return true;
+                }
+                else if (root->pRight == nullptr)
+                {
+                    ptr = root;
+                    root = root->pLeft;
+                    delete ptr;
+                    ptr = nullptr;
+                    return true;
+                }
+                else
+                {
+                    ptr = root->pLeft;
+                    while (ptr->pRight != nullptr)
+                    {
+                        ptr = ptr->pRight;
+                    }
+                    root->value = ptr->value;
+                    return remove(root->pLeft, ptr->value);
+                }
+            }
+        }
+        return false;
+    }
+    
+    bool remove(Node *root, T value)
+    {
+        if (root)
+        {
+            if(root->value==value)
+                {
+                    if(root->pLeft && root->pRight){
+                    Node *ptr = root->pRight;
+                    while (ptr->pLeft)
+                    {
+                        ptr = ptr->pRight;
+                    }
+                    root->value = ptr->value;
+                    remove(root->pRight, ptr->value);
+                }
+                else if(root->pLeft){
+                    Node *p =root;
+                    root = root->pLeft;
+                    delete p;
+                    p = nullptr;
+                }
+                else if(root->pRight){
+                    Node *p =root;
+                    root = root->pRight;
+                    delete p;
+                    p = nullptr;
+                }
+                else{
+                    delete root;
+                    root = nullptr;
+                }
+            }
+        }
+        return false;
+    }
+    
+    void deleteNode(T value)
+    {
+        remove(root, value);
+    }
+    string inOrderRec(Node *root)
+    {
+        stringstream ss;
+        if (root != nullptr)
+        {
+            ss << inOrderRec(root->pLeft);
+            ss << root->value << " ";
+            ss << inOrderRec(root->pRight);
+        }
+        return ss.str();
+    }
+
+    string inOrder()
+    {
+        return inOrderRec(this->root);
+    }
+
+    class Node
+    {
+    private:
+        T value;
+        Node *pLeft, *pRight;
+        friend class BinarySearchTree<T>;
+
+    public:
+        Node(T value) : value(value), pLeft(NULL), pRight(NULL) {}
+        Node() {}
+        ~Node() {}
+    };
 };
 
 int main()
 {
-    int num_segment_list[] = {1, 3, 5};
-    int num_phases = 3;
-    int array[] = {10, 9, 8, 7, 6, 5, 4, 3, 2, 1};
-    Sorting<int>::ShellSort(&array[0], &array[10], &num_segment_list[0], num_phases);
+    BinarySearchTree<int> bst;
+    bst.add(9);
+    bst.add(2);
+    bst.add(10);
+    bst.add(8);
+    bst.add(11);
+    cout << bst.inOrder() << endl;
+    bst.deleteNode(9);
+    cout << bst.inOrder();
     return 0;
 }
