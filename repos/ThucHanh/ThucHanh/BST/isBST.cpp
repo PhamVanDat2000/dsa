@@ -2,7 +2,7 @@
 #include <string>
 #include <algorithm>
 #include <sstream>
-#include<queue>
+#include <queue>
 using namespace std;
 
 template <class K, class V>
@@ -160,68 +160,37 @@ public:
     //=================BAI 1==================
     // STUDENT ANSWER BEGIN
     // You can define other functions here to help you.
-    void TreeBreadthFirst(Node *treeRoot)
+    void BreadthFirstTravseral(Node *root)
     {
-        queue<Node> *queue = new BinaryTree<K,V>;
-
-        if (treeRoot == NULL)
-            return;
-        queue->insert(treeRoot);
-        while (!queue->IsEmpty())
+        std::queue<Node *> q;
+        if (root)
         {
-            Node *traverse = queue->dequeue();
-            cout << traverse->value << " ";
-            if (traverse->pLeft != NULL)
-                queue->insert(traverse->pLeft);
-            if (traverse->pRight != NULL)
-                queue->insert(traverse->pRight);
+            q.push(root);
+            cout << root->value;
         }
-        delete queue;
+        while (!q.empty())
+        {
+            const Node *const temp_node = q.front();
+            q.pop();
+
+            if (temp_node->pLeft)
+            {
+                q.push(temp_node->pLeft);
+                cout << " " << temp_node->pLeft->value;
+            }
+
+            if (temp_node->pRight)
+            {
+                q.push(temp_node->pRight);
+                cout << " " << temp_node->pRight->value;
+            }
+        }
     }
     void BFS()
     {
-        TreeBreadthFirst(this->root);
+        BreadthFirstTravseral(this->root);
     }
     // STUDENT ANSWER END
-    bool remove(Node *root, V value)
-    {
-        if (root)
-        {
-            if(root->value==value)
-                {
-                    if(root->pLeft && root->pRight){
-                    Node *ptr = root->pRight;
-                    while (ptr->pLeft)
-                    {
-                        ptr = ptr->pRight;
-                    }
-                    root->value = ptr->value;
-                    remove(root->pRight, ptr->value);
-                }
-                else if(root->pLeft){
-                    Node *p =root;
-                    root = root->pLeft;
-                    delete p;
-                    p = nullptr;
-                }
-                else if(root->pRight){
-                    Node *p =root;
-                    root = root->pRight;
-                    delete p;
-                    p = nullptr;
-                }
-                else{
-                    delete root;
-                    root = nullptr;
-                }
-            }
-        }
-        return false;
-    }  
-    void deleteNode(V value)
-    {
-        remove(root, value);
-    }
 };
 
 int main()
@@ -230,10 +199,6 @@ int main()
     binaryTree.addNode("", 2, 4);  // Add to root
     binaryTree.addNode("L", 3, 6); // Add to root's left node
     binaryTree.addNode("R", 5, 9); // Add to root's right node
-    //binaryTree.BFS();
-    cout << binaryTree.inOrder();
-    cout << "=============="<< endl;
-    binaryTree.deleteNode(6);
-    cout << binaryTree.inOrder();
+    binaryTree.BFS();
     return 0;
 }

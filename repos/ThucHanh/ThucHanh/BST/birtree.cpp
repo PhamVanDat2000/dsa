@@ -21,116 +21,99 @@ public:
     }
 
     //Helping function
+    Node *addNode(Node *root, T value)
+    {
+        if (root == nullptr)
+            root = new Node(value);
+        else
+        {
+            if (value < root->value)
+                root->pLeft = addNode(root->pLeft, value);
+            else
+                root->pRight = addNode(root->pRight, value);
+        }
+        return root;
+    }
 
     void add(T value)
     {
-        if (root == NULL)
-        {
-            root->value = value;
-            root->pLeft = NULL;
-            root->pRight = NULL;
-        }
+        root = addNode(root, value);
+    }
+
+    Node *deleteB(Node *root, T value)
+    {
+        if (root == nullptr)
+            return root;
+        if (value < root->value)
+            root->pLeft = deleteB(root->pLeft, value);
+        else if (value > root->value)
+            root->pRight = deleteB(root->pRight, value);
         else
         {
-            Node *pNew = new Node(value);
-
-            Node *p = new Node();
-            p = root;
-            Node *parent = new Node();
-            while (p != NULL)
+            if (root->pLeft == nullptr && root->pRight == nullptr)
             {
-                parent = p;
-                if (value <= p->value)
-                {
-                    p = p->pLeft;
-                }
-                else
-                {
-                    p = p->pRight;
-                }
+                delete root;
+                root = nullptr;
+                return nullptr;
             }
-            if (value <= parent->value)
-                parent->pLeft = pNew;
-            else
+            else if (root->pLeft == nullptr)
             {
-                parent->pRight = pNew;
+                Node *pNew = root->pRight;
+                delete root;
+                root = nullptr;
+                return pNew;
+            }
+            else if (root->pRight == nullptr)
+            {
+                Node *pNew = root->pLeft;
+                delete root;
+                root = nullptr;
+                return pNew;
+            }
+            else{
+                Node* p= root->pRight;
+                while(p->pLeft) p = p->pLeft;
+                root->value = p ->value;
+                root->pRight = deleteB(root->pRight, root->value);
             }
         }
+        return root;
     }
-    bool deleteB(Node *root, T value)
+
+    void deleteNode(T value)
     {
+        root = deleteB(root, value);
+    }
+    string inOrderRec(Node *root)
+    {
+        stringstream ss;
         if (root != nullptr)
         {
-            Node *ptr = new Node();
-            if (value < root->value)
-                return deleteB(root->pLeft, value);
-            else if (value > root->value)
-                return deleteB(root->pRight, value);
-            else
-            {
-                if (root->pLeft == nullptr)
-                {
-                    ptr = root;
-                    root = root->pRight;
-                    delete ptr;
-                    return true;
-                }
-                else if (root->pRight == nullptr)
-                {
-                    ptr = root;
-                    root = root->pLeft;
-                    delete[] ptr;
-                    return true;
-                }
-                else
-                {
-                    ptr = root->pLeft;
-                    while (ptr->pRight != NULL)
-                    {
-                        ptr = ptr->pRight;
-                    }
-                    root->value = ptr->value;
-                    return deleteB(root->pLeft, value);
-                }
-            }
+            ss << inOrderRec(root->pLeft);
+            ss << root->value << " ";
+            ss << inOrderRec(root->pRight);
         }
-        return true;
+        return ss.str();
     }
-void deleteNode(T value)
-{
-    deleteB(root, value);
-}
-string inOrderRec(Node *root)
-{
-    stringstream ss;
-    if (root != nullptr)
+
+    string inOrder()
     {
-        ss << inOrderRec(root->pLeft);
-        ss << root->value << " ";
-        ss << inOrderRec(root->pRight);
+        return inOrderRec(this->root);
     }
-    return ss.str();
-}
 
-string inOrder()
-{
-    return inOrderRec(this->root);
-}
+    class Node
+    {
+    private:
+        T value;
+        Node *pLeft, *pRight;
+        friend class BinarySearchTree<T>;
 
-class Node
-{
-private:
-    T value;
-    Node *pLeft, *pRight;
-    friend class BinarySearchTree<T>;
-
-public:
-    Node(T value) : value(value), pLeft(NULL), pRight(NULL) {}
-    Node() {}
-    ~Node() {}
+    public:
+        Node(T value) : value(value), pLeft(NULL), pRight(NULL) {}
+        Node() {}
+        ~Node() {}
+    };
 };
-}
-;
 
 int main()
 {
@@ -138,6 +121,9 @@ int main()
     bst.add(9);
     bst.add(2);
     bst.add(10);
+    cout << bst.inOrder() << endl;
+
+    bst.add(11);
     bst.deleteNode(9);
     cout << bst.inOrder();
     return 0;
