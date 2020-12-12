@@ -3,12 +3,6 @@
 #include <sstream>
 
 using namespace std;
-enum
-{
-    LH,
-    EH,
-    RH
-};
 
 template <class T>
 class AVL
@@ -35,30 +29,33 @@ public:
     };
     void clear() {}
 
-    void rotR(Node *&pR)
+    Node* rotR(Node *&pR)
     {
-        Node *p = pR;
+        Node* p = pR;
         pR = pR->pLeft;
         p->pLeft = pR->pRight;
         pR->pRight = p;
+        return pR;
     }
-    void rotL(Node *&pR)
+    Node* rotL(Node *&pR)
     {
-        Node *p = pR;
+        Node* p = pR;
         pR = pR->pRight;
         p->pRight = pR->pLeft;
         pR->pLeft = p;
+        return pR;
     }
-    void rotLR(Node *&pR)
+    Node* rotRL(Node *&pR)
     {
-        rotL(&pR->pLeft);
-        rotR(&pR);
+        rotR(pR->pRight);
+        return rotL(pR);
     }
-    void rotRL(Node *&pR)
+    Node* rotLR(Node *&pR)
     {
-        rotR(&pR->pRight);
-        rotL(&pR);
+        rotL(pR->pLeft);
+        return rotR(pR);
     }
+    
     bool balanceLeft(Node *&pR)
     {
         if (pR->b == EH)

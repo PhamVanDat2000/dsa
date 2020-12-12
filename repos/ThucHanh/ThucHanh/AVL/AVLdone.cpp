@@ -303,8 +303,8 @@ public:
         removeNode(value, root);
     }
 
- //====================bai 3=============================
- void inOrderRec(Node *root)
+    //====================bai 3=============================
+    void inOrderRec(Node *root)
     {
         if (root != nullptr)
         {
@@ -317,7 +317,7 @@ public:
     {
         inOrderRec(root);
     }
-    
+
     bool search(const T &value)
     {
         //TODO
@@ -352,11 +352,15 @@ public:
 int main()
 {
     AVLTree<int> avl;
-int arr[] = {10,52,98,32,68,92,40,13,42,63,99,100};
-for (int i = 0; i < 12; i++){
-	avl.insert(arr[i]);
-}
-avl.printInorder();
-cout << endl;
-cout << avl.search(10);
+    int arr[] = {10, 52, 98, 32, 68, 92, 40, 13, 42, 63, 99, 100};
+    for (int i = 0; i < 12; i++)
+    {
+        avl.insert(arr[i]);
+    }
+    avl.printInorder();
+    cout << endl;
+    int a = 10;
+    avl.remove(a);
+    avl.printInorder();
+    return 0;
 }
