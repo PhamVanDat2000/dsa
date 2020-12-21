@@ -23,7 +23,6 @@ void bubbleSort(int a[], int n){
 		return;
 	}
 } 
-int a[100001];
 int main(){
 	int n;
 	cin >> n;
