@@ -45,9 +45,9 @@ public:
     }
     void printTree()
     {
-        cout<< "avl" << endl;
+        cout << "avl" << endl;
         avl->printTreeStructure();
-        cout<< "splay" << endl;
+        cout << "splay" << endl;
         splay->printTreeStructure();
     }
     //test ===============================================================================================================================
@@ -57,7 +57,8 @@ public:
         typename AVLTree::Node *pAvl = avl->add(key, value);
         pSplay->corr = pAvl;
         pAvl->corr = pSplay;
-        if (keys.size() == maxNumOfKeys)
+        // cho vao hang doi
+        if ((int)keys.size() == maxNumOfKeys)
             keys.pop();
         keys.push(key);
     }
@@ -85,8 +86,12 @@ public:
     {
 
         typename AVLTree::Node *p;
-        if (key == splay->root->entry->key)
+        if (key == splay->root->entry->key) // key trung root cua splay
         {
+            //cho vao hang doi
+            if ((int)keys.size() == maxNumOfKeys)
+                keys.pop();
+            keys.push(key);
             return splay->root->entry->value;
         }
         bool find = false;
@@ -98,7 +103,7 @@ public:
             if (temp == key)
             {
                 find = true;
-                i--;
+                keys.push(temp);
                 continue;
             }
             else
@@ -106,25 +111,37 @@ public:
                 keys.push(temp);
             }
         }
-        if (find)
+        if (find) // neu co trong hang doi thi search splay
         {
+            //cho vao hang doi
+            if ((int)keys.size() == maxNumOfKeys)
+                keys.pop();
+            keys.push(key);
             return splay->searchBKU(key, traversedList);
         }
-        else
+        else // neu k thi search avl
         {
-            p = avl->findBKUAVL(splay->root->corr, key);
-            if (p)
+            p = avl->findBKUAVL(splay->root->corr, key, traversedList);
+            if (p) //neu tim thay (tim tu rootsplay->corr)
             {
-                splay->splayBKU(p->corr);
+                splay->splayBKU(p->corr); //splay 1 lan tren splay tree
+                //cho vao hang doi
+                if ((int)keys.size() == maxNumOfKeys)
+                    keys.pop();
+                keys.push(key);
                 return p->entry->value;
             }
-            else
+            else // neu khong tim thay tim tu goc
             {
                 typename AVLTree::Node *pNew;
-                pNew = avl->findBKU(p, key);
+                pNew = avl->findBKU(splay->root->corr, key, traversedList);
                 if (pNew)
                 {
                     splay->splayBKU(pNew->corr);
+                    //cho vao hang doi
+                    if ((int)keys.size() == maxNumOfKeys)
+                        keys.pop();
+                    keys.push(key);
                     return pNew->entry->value;
                 }
             }
@@ -393,28 +410,40 @@ public:
                 throw std::out_of_range("Not found");
             Splay(N); //check once more;
             Node *P = N->left;
-            if (N->right)
+            if (N->right && P)
             {
-                if (!P)
-                {
-                    root = N->right;
-                    root->parent = NULL;
-                    delete[] N;
-                    N = NULL;
-                    return true;
-                }
                 while (P->right)
                     P = P->right;
-            }
-            if (N->right)
-            {
+                root = N->left;
+                root->parent = nullptr;
+                Splay(P);
                 P->right = N->right;
                 N->right->parent = P;
+                delete[] N;
+                N = nullptr;
+                return true;
             }
-            root = N->left;
-            if (root)
-                root->parent = NULL;
-            free(N);
+            else if (N->right)
+            {
+                root = root->right;
+                root->parent = nullptr;
+                delete[] N;
+                N = nullptr;
+            }
+            else if (P)
+            {
+                root = root->left;
+                root->parent = nullptr;
+                delete[] N;
+                N = nullptr;
+            }
+            else
+            {
+                delete[] N;
+                N = nullptr;
+                delete[] root;
+                root = nullptr;
+            }
             return true;
         }
         void remove(K key)
@@ -533,9 +562,9 @@ public:
             Node *P = root;
             while (P)
             {
-                traversedList.push_back(P->entry->key);
                 if (P->entry->key == key)
                     break;
+                traversedList.push_back(P->entry->key);
                 if (key < (P->entry->key))
                 {
                     if (P->left)
@@ -559,8 +588,7 @@ public:
             return NULL;
         }
 
-        V
-        searchBKU(K key, vector<K> &traversedList)
+        V searchBKU(K key, vector<K> &traversedList)
         {
             Node *p = searchBKUS(key, traversedList);
             if (!p)
@@ -1051,7 +1079,8 @@ public:
             return findAVL(root, key);
         }
         // search BKU
-        Node *findBKUAVL(Node *p, K key) // tim tu node p
+        //tim kiem bku avl tu node p
+        Node *findBKUAVL(Node *p, K key, vector<K> &traversedList) // tim tu node p
         {
             if (p == nullptr)
                 return NULL;
@@ -1061,13 +1090,15 @@ public:
                 {
                     return p;
                 }
-                else if (p->entry->key > key)
-                    return findBKUAVL(p->left, key);
+                traversedList.push_back(p->entry->key);
+                if (p->entry->key > key)
+                    return findBKUAVL(p->left, key, traversedList);
                 else
-                    return findBKUAVL(p->right, key);
+                    return findBKUAVL(p->right, key, traversedList);
             }
         }
-        Node *findBKUadd(Node *root, Node *p, K key)
+        //tim kiem bku tu root
+        Node *findBKUaddfunct(Node *root, Node *p, K key, vector<K> &traversedList)
         { // tim tu root gap p thi tra ve ket qua kr tim thay
             if (root == nullptr || root == p)
                 return NULL;
@@ -1077,15 +1108,16 @@ public:
                 {
                     return root;
                 }
-                else if (p->entry->key > key)
-                    return findBKUadd(root->left, p, key);
+                traversedList.push_back(root->entry->key);
+                if (p->entry->key > key)
+                    return findBKUaddfunct(root->left, p, key, traversedList);
                 else
-                    return findBKUadd(root->right, p, key);
+                    return findBKUaddfunct(root->right, p, key, traversedList);
             }
         }
-        Node *findBKU(Node *p, K key)
+        Node *findBKU(Node *p, K key, vector<K> &traversedList)
         {
-            return findBKUadd(root, p, key);
+            return findBKUaddfunct(root, p, key, traversedList);
         }
 
         void traverseNLR(void (*func)(K key, V value), Node *root)
@@ -1116,25 +1148,12 @@ int main()
     int keys[] = {1, 3, 5, 7, 9, 2, 4};
     for (int i = 0; i < 7; i++)
         tree->add(keys[i], keys[i]);
-
+    cout << "cay ban dau" << endl;
     tree->printTree();
-    cout << endl
-         << "===========" << endl;
-    vector<int> traverseList;
-    cout << tree->search(3, traverseList);
-
-    cout << endl
-         << "===========" << endl;
-    tree->printTree();
-
-    // //test
-    // cout << endl
-    //      << endl;
-    // while (traverseList.size())
-    // {
-    //     cout << traverseList.back();
-    //     traverseList.pop_back();
-    // }
-    // //test
+    vector<int> v;
+    tree->search(9, v);
+    tree->search(9, v);
+    tree->remove(9);
+    tree->printqueue();
     return 0;
 }

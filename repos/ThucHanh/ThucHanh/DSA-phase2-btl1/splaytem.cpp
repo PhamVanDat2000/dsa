@@ -188,28 +188,39 @@ public:
             throw std::out_of_range("Not found");
         Splay(N); //check once more;
         Node *P = N->left;
-        if (N->right)   // neu co con phai
+        if (N->right && P)
         {
-            if (!P)     // neu co k co con trai
-            {
-                root = N->right;    //dua con phai len lam root
-                root->parent = NULL;
-                delete[] N;
-                N = NULL;
-                return true;
-            }   // neu co con trai
-            while (P->right)    //tim con lon nhat cua cay con trai
+            while (P->right)
                 P = P->right;
-        }
-        if (N->right)   //neu co con phai
-        {
+            root = N->left;
+            root->parent = nullptr;
+            Splay(P);
             P->right = N->right;
             N->right->parent = P;
+            delete[] N;
+            N = nullptr;
+            return true;
         }
-        root = N->left;
-        if (root)
-            root->parent = NULL;
-        free(N);
+        else if (N->right)
+        {
+            root = root->right;
+            root->parent = nullptr;
+            delete[] N;
+            N = nullptr;
+        }
+        else if (P)
+        {
+            root = root->left;
+            root->parent = nullptr;
+            delete[] N;
+            N = nullptr;
+        }
+        else{
+            delete[] N;
+            N = nullptr;
+            delete[] root;
+            root = nullptr;
+        }
         return true;
     }
     void remove(K key)
@@ -359,10 +370,6 @@ int main()
     tree->printTreeStructure();
     cout << "===========" << endl;
     tree->search(7);
-    tree->printTreeStructure();
-    cout << "===========" << endl;
-    tree->remove(7);
-    tree->printTreeStructure();
 
     return 0;
 }
